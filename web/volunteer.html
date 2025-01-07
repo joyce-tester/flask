@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Volunteer</h1>
+<p>Register and manage volunteer activities here.</p>
+<form action="/volunteer" method="POST">
+    <label for="name">Name:</label>
+    <input type="text" id="name" name="name" required><br><br>
+    <label for="activity">Activity:</label>
+    <select id="activity" name="activity" required>
+        <option value="usher">Usher</option>
+        <option value="choir">Choir</option>
+        <option value="technical">Technical Support</option>
+    </select><br><br>
+    <button type="submit">Register</button>
+</form>
+{% endblock %}

@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Attendance</title>
+    <style>
+        body {
+            display: flex;
+            margin: 0;
+            font-family: Arial, sans-serif;
+        }
+        .sidebar {
+            width: 200px;
+            background-color: #f4f4f4;
+            padding: 20px;
+            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+        }
+        .sidebar ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        .sidebar ul li {
+            margin: 10px 0;
+        }
+        .sidebar ul li button {
+            width: 100%;
+            padding: 10px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            cursor: pointer;
+            text-align: left;
+        }
+        .sidebar ul li button:hover {
+            background-color: #0056b3;
+        }
+        .content {
+            flex-grow: 1;
+            padding: 20px;
+        }
+        .table-container {
+            display: none;
+        }
+        .table-container.active {
+            display: block;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        table, th, td {
+            border: 1px solid #ddd;
+        }
+        th, td {
+            padding: 10px;
+            text-align: left;
+        }
+        th {
+            background-color: #007bff;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <ul>
+            <li><button onclick="showTable('church')">Church</button></li>
+            <li><button onclick="showTable('youth')">Youth</button></li>
+        </ul>
+    </div>
+    <div class="content">
+        <div id="church" class="table-container active">
+            <h1>Church Attendance</h1>
+            <table>
+                <tr>
+                    <th>S.No</th>
+                    <th>Name</th>
+                    <th>Date</th>
+                    <th>Status</th>
+                </tr>
+                <tr>
+                    <td>1</td>
+                    <td>Sophia</td>
+                    <td>2025-01-04</td>
+                    <td>Present</td>
+                </tr>
+                <tr>
+                    <td>2</td>
+                    <td>Joyce</td>
+                    <td>2025-01-04</td>
+                    <td>Absent</td>
+                </tr>
+            </table>
+        </div>
+        <div id="youth" class="table-container">
+            <h1>Youth Attendance</h1>
+            <table>
+                <tr>
+                    <th>S.No</th>
+                    <th>Name</th>
+                    <th>Date</th>
+                    <th>Status</th>
+                </tr>
+                <tr>
+                    <td>1</td>
+                    <td>John</td>
+                    <td>2025-01-04</td>
+                    <td>Present</td>
+                </tr>
+                <tr>
+                    <td>2</td>
+                    <td>Anna</td>
+                    <td>2025-01-04</td>
+                    <td>Absent</td>
+                </tr>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        function showTable(tabId) {
+            // Hide all tables
+            const containers = document.querySelectorAll('.table-container');
+            containers.forEach(container => container.classList.remove('active'));
+
+            // Show the selected table
+            document.getElementById(tabId).classList.add('active');
+        }
+    </script>
+</body>
+</html>
