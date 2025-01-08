@@ -60,8 +60,11 @@ class DBAgent:
         try:
             self._connect()
             if self.connection:
-                self.cursor.execute(query, params or ())
-                results = self.cursor.fetchall()
+                with self.connection.cursor() as cursor:
+                    cursor.execute(query, params)
+                    results = cursor.fetchall()
+                #self.cursor.execute(query, params or ())
+                #results = self.cursor.fetchall()
         except Error as e:
             print(f"Error executing query: {e}")
         finally:
@@ -90,13 +93,21 @@ class DBAgent:
 # Usage example
 if __name__ == "__main__":
     db_agent = DBAgent()
-
-    # Example of reading data
-    result = db_agent.execute_query("SELECT DISTINCT attendance_date FROM attendance")
+    query = """
+    SELECT A.id, M.Member_id, A.attendance_date
+    FROM attendance A,
+    Members M WHERE A.Member_id = M.Member_id
+    AND A.attendance_date = %s
+    """
+# Example of reading data
+    selected_date = "2025-01-07"  # Full date
+    print(query)
+    print((selected_date,))
+    result = db_agent.execute_query(query, (selected_date,))
 
     # Convert the result into a list of strings (attendance dates)
-    attendance_dates = [str(row[0]) for row in result]
+   # attendance_dates = [str(row[0]) for row in result]
 
     # Print the list of attendance dates
-    print(attendance_dates)
+    print(result)
 
