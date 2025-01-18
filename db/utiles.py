@@ -66,6 +66,7 @@ def add_to_db(member_id, attendance_date):
             cursor.close()
             connection.close()
             print("MySQL connection closed.")
+
 def read_table(sql):
     """
     Reads data from the database based on the provided SQL query.
@@ -76,6 +77,7 @@ def read_table(sql):
     Returns:
         list: A list of tuples containing the query results.
     """
+   # query = "SELECT json_data FROM Sundays2025 WHERE sunday_date = %s"
     connection = None
     try:
         # Get the database connection
@@ -99,4 +101,8 @@ def read_table(sql):
             connection.close()
             print("MySQL connection closed.")
 if __name__ == "__main__":
-    read_table("select * from attendance")
+
+    print("Error: ")
+
+
+

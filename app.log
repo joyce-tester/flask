@@ -1,26 +1,6 @@
-2025-01-08 03:23:51,132 - ERROR - Exception on /attendance-check [GET]
-Traceback (most recent call last):
-  File "/usr/local/lib/python3.10/site-packages/flask/app.py", line 2077, in wsgi_app
-    response = self.full_dispatch_request()
-  File "/usr/local/lib/python3.10/site-packages/flask/app.py", line 1525, in full_dispatch_request
-    rv = self.handle_user_exception(e)
-  File "/usr/local/lib/python3.10/site-packages/flask/app.py", line 1523, in full_dispatch_request
-    rv = self.dispatch_request()
-  File "/usr/local/lib/python3.10/site-packages/flask/app.py", line 1509, in dispatch_request
-    return self.ensure_sync(self.view_functions[rule.endpoint])(**req.view_args)
-  File "/home/joycelin53/mysite/flask_app.py", line 43, in attendance_check
-    selected_year=selected_year,
-NameError: name 'selected_year' is not defined
-2025-01-08 03:30:31,368 - ERROR - Exception on /attendance-check [GET]
-Traceback (most recent call last):
-  File "/usr/local/lib/python3.10/site-packages/flask/app.py", line 2077, in wsgi_app
-    response = self.full_dispatch_request()
-  File "/usr/local/lib/python3.10/site-packages/flask/app.py", line 1525, in full_dispatch_request
-    rv = self.handle_user_exception(e)
-  File "/usr/local/lib/python3.10/site-packages/flask/app.py", line 1523, in full_dispatch_request
-    rv = self.dispatch_request()
-  File "/usr/local/lib/python3.10/site-packages/flask/app.py", line 1509, in dispatch_request
-    return self.ensure_sync(self.view_functions[rule.endpoint])(**req.view_args)
-  File "/home/joycelin53/mysite/flask_app.py", line 43, in attendance_check
-    selected_year=selected_year,
-UnboundLocalError: local variable 'selected_year' referenced before assignment
+2025-01-16 21:11:49,488 - ERROR - Unexpected error: expected token 'end of print statement', got ':'
+2025-01-16 21:15:15,553 - ERROR - Unexpected error: expected token 'end of print statement', got ':'
+2025-01-16 21:20:48,880 - ERROR - Error in view_schedule: expected token 'end of print statement', got ':'
+2025-01-16 21:44:33,347 - ERROR - Unexpected error: 'None' has no attribute 'items'
+2025-01-16 21:44:43,422 - ERROR - Error in view_schedule: 'None' has no attribute 'items'
+2025-01-18 19:48:40,025 - ERROR - OSError: write error

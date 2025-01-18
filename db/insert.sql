@@ -4,3 +4,17 @@ INSERT INTO Members (MemberID, FullName, PreferName, DOB, groupID) VALUES ('JL00
 INSERT INTO Members (MemberID, FullName, PreferName, DOB, groupID) VALUES ('SC0003', 'Shirley Chen', '陈实', null,'SW');
 INSERT INTO Members (MemberID, FullName, PreferName, DOB, groupID) VALUES ('RZ0001', 'Roland Zhou', null, null,'YO');
 INSERT INTO Members (MemberID, FullName, PreferName, DOB, groupID) VALUES ('JG0004', 'Jennifer Guo', null, null,'YO');
+INSERT INTO Members (Member_id, FullName, PreferName, DOB, groupID) VALUES ('SD0002', 'Sarah Du', null, null, 'YO');
+INSERT INTO Members (Member_id, FullName, PreferName, DOB, groupID) VALUES ('AL0003', 'Annie Liang', null, null, 'YO');
+INSERT INTO Members (Member_id, FullName, PreferName, DOB, groupID) VALUES ('JW0004', 'Jeremy Wu', null, null, 'YO');
+INSERT INTO Members (Member_id, FullName, PreferName, DOB, groupID) VALUES ('AW0005', 'Andrea Wu', null, null, 'YO');
+INSERT INTO Members (Member_id, FullName, PreferName, DOB, groupID) VALUES ('EL0006', 'Emma Li', null, null, 'YO');
+INSERT INTO Members (Member_id, FullName, PreferName, DOB, groupID) VALUES ('SL0007', 'Selina Li', null, null, 'YO');
+INSERT INTO Members (Member_id, FullName, PreferName, DOB, groupID) VALUES ('FZ0008', 'Faith Zhao', null, null, 'YO');
+INSERT INTO Members (Member_id, FullName, PreferName, DOB, groupID) VALUES ('AY0009', 'Abby Yang', null, null, 'YO');
+INSERT INTO Members (Member_id, FullName, PreferName, DOB, groupID) VALUES ('AY0010', 'Aslan Yu', null, null, 'YO');
+INSERT INTO Members (Member_id, FullName, PreferName, DOB, groupID) VALUES ('EY0011', 'Ethan Yang', null, null, 'YO');
+INSERT INTO Members (Member_id, FullName, PreferName, DOB, groupID) VALUES ('AZ0012', 'Abel Zhou', null, null, 'YO');
+INSERT INTO Members (Member_id, FullName, PreferName, DOB, groupID) VALUES ('JS0013', 'Jessica Sun', null, null, 'YO');
+INSERT INTO Members (Member_id, FullName, PreferName, DOB, groupID) VALUES ('RL0014', 'Rachel Li', null, null, 'YO');
+INSERT INTO Members (Member_id, FullName, PreferName, DOB, groupID) VALUES ('RT0015', 'Rae-Anne Tang', null, null, 'YO');

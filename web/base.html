@@ -41,9 +41,10 @@
 </head>
 <body>
     <div class="sidebar">
-        <a href="/schedule" class="{% if request.path == '/schedule' %}active{% endif %}">Schedule</a>
+        <a href="/schedule" class="{% if request.path == '/schedule' %}active{% endif %}">Youth Schedule</a>
         <a href="/attendance-check" class="{% if request.path == '/attendance-check' %}active{% endif %}">Attendance Check</a>
         <a href="/volunteer" class="{% if request.path == '/volunteer' %}active{% endif %}">Volunteer</a>
+        <a href="/view" class="{% if request.path == '/view' %}active{% endif %}">View Schedule</a>
     </div>
     <div class="content">
         {% block content %}

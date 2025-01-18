@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Youth Schedule</h1>
+<p>Select a date to view roles and names:</p>
+
+<form id="schedule-form" method="POST" action="/view">
+    <!-- Date Selection (Drop Down Box) -->
+    <div>
+        <label for="date">Date:</label>
+        <select id="date" name="date" onchange="this.form.submit()">
+            <option value="" disabled {% if not selected_date %}selected{% endif %}>Select a date</option>
+            {% for date in dates %}
+                <option value="{{ date }}" {% if date == selected_date %}selected{% endif %}>{{ date }}</option>
+            {% endfor %}
+        </select>
+    </div>
+
+    <!-- Role and Name Table -->
+    <table border="1" style="width: 50%; border-collapse: collapse; text-align: left; margin-top: 20px;">
+        <thead>
+            <tr>
+                <th>Role</th>
+                <th>Name</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for role, name in roles.items() %}
+                <tr>
+                    <td>{{ role }}</td>
+                    <td>{{ name }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</form>
+
+{% endblock %}

@@ -1,11 +1,6 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Attendance Check</title>
-</head>
-<body>
+{% extends "base.html" %}
+{% block content %}
     <h1>Attendance Check</h1>
     <p>Track church members' attendance here.</p>
 
@@ -27,7 +22,7 @@
     <table border="1">
         <tr>
             <th>ID</th>
-            <th>Member ID</th>
+            <th>Name</th>
             <th>Attendance Date</th>
         </tr>
         {% for row in data %}
@@ -42,5 +37,5 @@
         </tr>
         {% endfor %}
     </table>
-</body>
-</html>
+{% endblock %}
+

@@ -1,6 +1,7 @@
 import mysql.connector
 from mysql.connector import Error
 from datetime import date, datetime
+import json
 
 # Configure your database connection
 DB_CONFIG = {
@@ -94,20 +95,24 @@ class DBAgent:
 if __name__ == "__main__":
     db_agent = DBAgent()
     query = """
-    SELECT A.id, M.Member_id, A.attendance_date
-    FROM attendance A,
-    Members M WHERE A.Member_id = M.Member_id
-    AND A.attendance_date = %s
+    UPDATE Sundays2025
+    SET json_data = %s
+    WHERE sunday_date = %s
     """
-# Example of reading data
-    selected_date = "2025-01-07"  # Full date
-    print(query)
-    print((selected_date,))
-    result = db_agent.execute_query(query, (selected_date,))
 
-    # Convert the result into a list of strings (attendance dates)
-   # attendance_dates = [str(row[0]) for row in result]
+# JSON data to update
+    data = {
+        "Assistant": "Sarah",
+        "English Adult leader": "Sarah",
+        "Sunday School Teacher": "Lilian"
+    }
 
-    # Print the list of attendance dates
-    print(result)
+# Date to match
+    selected_date = "2025-01-12"
 
+# Serialize the JSON data to a string
+    json_data = json.dumps(data)
+
+# Parameters for the query
+    params = (json_data, selected_date)
+    db_agent.execute_update(query, params)
