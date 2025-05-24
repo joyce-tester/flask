@@ -1,54 +1,185 @@
-
-import logging
+from flask import Flask, request, render_template, jsonify
+from datetime import datetime, timedelta
+from db.db_agent import DBAgent  # Import the DBAgent class
 import json
-from flask import Flask, request,render_template, jsonify
-from datetime import datetime
-from db.utiles import add_to_db, read_table
-from db.db_agent import DBAgent
-from collections import OrderedDict
 
 app = Flask(__name__, template_folder='../web')
-# Set up logging configuration to capture debug level messages
-logging.basicConfig(
-    filename='app.log',  # The log file where messages will be stored
-    level=logging.DEBUG,  # Capture messages of DEBUG level and higher
-    format='%(asctime)s - %(levelname)s - %(message)s'  # Log format
-)
 
+ROLES = [
+    "Sunday School Teacher",
+    "Assistant",
+    "Chinese Sunday School leader",
+    "Youth fellowship leader",
+    "Piano",
+    "Others"
+]
+
+PEOPLE = [
+    "Lilian", "Sarah", "Annie", "Jeremy", "Andrea", "Emma", "Selina", "Faith",
+    "Abby", "Aslan", "Ethan", "Abel", "Jessica", "Rachel", "Rae-Anne", "Arielle", "Yu-Ang"
+]
 @app.route('/')
 def home():
     return render_template('volunteer.html')
+
+@app.route('/report', methods=['GET'])
+def report():
+    # Get the selected name from the query parameters
+    selected_name = request.args.get('name')
+
+    # If no name is selected, show an empty table
+    if not selected_name:
+        return render_template('report.html', results=None, selected_name=None)
+
+    # Define the query for fetching data
+    query = """
+    SELECT sunday_date, JSON_UNQUOTE(JSON_SEARCH(json_data, 'one', %s)) AS role
+    FROM Sundays2025
+    WHERE JSON_SEARCH(json_data, 'one', %s) IS NOT NULL;
+    """
+
+    try:
+        # Initialize the database agent and execute the query
+        db_agent = DBAgent()
+        results = db_agent.execute_query(query, (selected_name, selected_name))
+    except Exception as e:
+        # Log the error and render an error page (or handle it as needed)
+        print(f"Database error: {e}")
+        return render_template('error.html', error_message="An error occurred while processing your request.")
+
+    # Render the results
+    return render_template('report.html', results=results, selected_name=selected_name)
+
 @app.route('/volunteer')
 
 def volunteer():
     return render_template('volunteer.html')
-
 @app.route('/schedule', methods=['GET', 'POST'])
 def schedule():
-    try:
-        # Query to get upcoming dates
-     #   query = "select sunday_date from Sundays2025 where sunday_date >= CURDATE()"
-        query = "select sunday_date from Sundays2025"
+    if request.method == 'POST':
+        start_date = request.form.get('start_date')
+        end_date = request.form.get('end_date')
+
+        if not start_date or not end_date:
+            return "Error: Missing start_date or end_date", 400
+
+        try:
+            start_date = datetime.strptime(start_date, '%Y-%m-%d')
+            end_date = datetime.strptime(end_date, '%Y-%m-%d')
+        except ValueError as e:
+            return f"Error: Invalid date format. Expected YYYY-MM-DD. Error: {e}", 400
+
+        # Query the database for Sundays2025 data within the selected date range
+        query = """
+        SELECT sunday_date, json_data
+        FROM Sundays2025
+        WHERE sunday_date BETWEEN %s AND %s
+        """
         db_agent = DBAgent()
-        results = db_agent.execute_query(query)
-        dates = [str(row[0]) for row in results]
+        results = db_agent.execute_query(query, (start_date.strftime('%Y-%m-%d'), end_date.strftime('%Y-%m-%d')))
 
-        # If no date is selected, set the first date as default
-        if request.method == 'POST':
-            selected_date = request.form.get('date')
-        else:
-            selected_date = dates[0] if dates else None  # Default to the first date
+        dates_in_range = []
+        for row in results:
+            sunday_date = row[0]  # First column is sunday_date
+            json_data = row[1]  # Second column is json_data (may be None)
 
-        # Handle roles loading based on selected date
-        roles = load_roles(selected_date)
+            # If json_data is None, initialize an empty dictionary
+            if json_data is None:
+                json_data = {}
+            else:
+                json_data = json.loads(json_data)  # Parse JSON data
 
-        # Render the schedule template with the roles and available dates
-        return render_template("schedule.html", dates=dates, selected_date=selected_date, roles=roles)
+            # Generate roles and assigned names for the current date
+            roles = []
+            for role in ROLES:
+                assigned_person = json_data.get(role, "")  # Get the assigned person for the role (default to empty string)
+                roles.append({
+                    'name': role,
+                    'assigned_person': assigned_person
+                })
 
-    except Exception as e:
-        logging.error("Unexpected error: %s", e)
-        return "An unexpected error occurred. Please check the logs for details.", 500
+            dates_in_range.append({
+                'date': sunday_date.strftime('%Y-%m-%d'),
+                'header_name': sunday_date.strftime('%A, %Y-%m-%d'),
+                'roles': roles
+            })
 
+        return render_template('schedule.html', start_date=start_date.strftime('%Y-%m-%d'), end_date=end_date.strftime('%Y-%m-%d'), dates_in_range=dates_in_range, people=PEOPLE)
+
+    return render_template('schedule.html', start_date=None, end_date=None, dates_in_range=None, people=PEOPLE)
+
+@app.route('/submit', methods=['POST'])
+def submit():
+    form_data = request.form
+    selected_roles = {}
+
+    for key, value in form_data.items():
+        if key.startswith(tuple(ROLES)):
+            role, date = key.rsplit('_', 1)
+            if date not in selected_roles:
+                selected_roles[date] = {}
+            selected_roles[date][role] = value
+
+    # Update the database with the selected roles
+    db_agent = DBAgent()
+    for date, roles in selected_roles.items():
+        json_data = json.dumps(roles)
+        query = """
+        UPDATE Sundays2025
+        SET json_data = %s
+        WHERE sunday_date = %s
+        """
+        db_agent.execute_update(query, (json_data, date))
+
+    return jsonify({
+        "message": "Schedule submitted successfully!",
+        "selected_roles": selected_roles
+    })
+@app.route('/materials')
+def materials():
+    # Load retreat materials
+    try:
+        with open('retreat_materials.json', 'r') as file:
+            retreat_materials = json.load(file)
+    except (FileNotFoundError, json.JSONDecodeError):
+        retreat_materials = []
+
+    # Load learning materials
+    try:
+        with open('learning_materials.json', 'r') as file:
+            learning_materials = json.load(file)
+    except (FileNotFoundError, json.JSONDecodeError):
+        learning_materials = []
+
+    # Optionally load sunday school materials
+    sunday_materials = []  # Placeholder
+
+    return render_template(
+        'materials.html',
+        retreat_materials=retreat_materials,
+        learning_materials=learning_materials,
+        sunday_materials=sunday_materials
+    )
+@app.route('/learning-materials')
+def learning_materials():
+    # Load learning materials from a JSON file
+    try:
+        with open('learning_materials.json', 'r') as file:
+            learning_materials = json.load(file)
+    except (FileNotFoundError, json.JSONDecodeError):
+        learning_materials = []  # Default to an empty list if the file is missing or corrupted
+
+    return render_template('learning_materials.html', learning_materials=learning_materials)
+@app.route('/retreat-materials')
+def retreat_materials():
+    # Load learning materials from a JSON file
+    try:
+        with open('retreat_materials.json', 'r') as file:
+            retreat_materials = json.load(file)
+    except (FileNotFoundError, json.JSONDecodeError):
+        retreat_materials = []  # Default to an empty list if the file is missing or corrupted
+
+    return render_template('retreat_materials.html', retreat_materials=retreat_materials)
 @app.route('/view', methods=['GET', 'POST'])
 def view_schedule():
     try:
@@ -62,8 +193,6 @@ def view_schedule():
         else:
             selected_date = dates[0] if dates else None
         roles = load_roles(selected_date)
-        logging.debug(f"Selected date: {selected_date}")
-        logging.debug(f"Roles: {roles}")
 
         # Render the HTML template with context
         return render_template(
@@ -74,7 +203,6 @@ def view_schedule():
         )
 
     except Exception as e:
-        logging.error(f"Error in view_schedule: {e}")
         return "An error occurred while rendering the schedule.", 500
 
 
@@ -108,59 +236,8 @@ def attendance_check():
     )
 
 
-@app.route('/add', methods=['GET'])
-def add_attendance():
-    # Example usage of addtoDB function
-    id = request.args.get('id', 'Unknown')
-    attendance_date = datetime.now().strftime("%Y-%m-%d")
-
-    if not id or not attendance_date:
-        return jsonify({"error": "Missing member_id or attendance_date"}), 400
-
-    try:
-        add_to_db(id, attendance_date)
-        return jsonify({"message": "Record added successfully!"}), 200
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
-
-@app.route('/submit', methods=['POST'])
-def submit():
-    selected_date = request.form.get("date")
-
-    # Get selected names for each role (whether selected from dropdown or typed in)
-    selected_roles = OrderedDict((role, request.form.get(role)) for role in request.form if role != "date")
-
-    # Convert roles to JSON format for storing in the database
-    json_data = json.dumps(selected_roles)
-
-    # Update the database with the selected roles
-    query = "UPDATE Sundays2025 SET json_data=%s WHERE sunday_date=%s"
-    db_agent = DBAgent()
-    params = (json_data, selected_date)
-    db_agent.execute_update(query, params)
-
-    return jsonify({
-        "date": selected_date,
-        "roles": selected_roles
-    })
-
-@app.route('/test', methods=['GET'])
-def display_record():
-    query = "SELECT id, Member_id, attendance_date FROM attendance"
-    attendance_data = read_table(query)
-    return f'Attendance created for {attendance_data}'
-
 def load_roles(selected_date, json_file_path="leader.json"):
-    """
-    Load roles either from the database or from a JSON file.
 
-    Args:
-        selected_date (str): The date to query in the database.
-        json_file_path (str): Path to the fallback JSON file.
-
-    Returns:
-        dict: Loaded roles as a dictionary.
-    """
     if not selected_date:
         return {}
     query = "SELECT json_data FROM Sundays2025 WHERE sunday_date = %s"
@@ -190,5 +267,4 @@ def load_roles(selected_date, json_file_path="leader.json"):
         return {}
 
 if __name__ == '__main__':
-    app.logger.setLevel(logging.DEBUG)
     app.run(debug=True)

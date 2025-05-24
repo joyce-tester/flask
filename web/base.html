@@ -1,18 +1,22 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Church Attendance</title>
+    <title>Youth Voulunteer Tracking System</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Georgia', serif;
             margin: 0;
             padding: 0;
             display: flex;
             height: 100vh;
+            background-image: url('church_background.jpg'); /* Replace with your background image */
+            background-size: cover;
+            background-position: center;
+            color: #333;
         }
         .sidebar {
-            width: 200px;
-            background-color: #f4f4f4;
+            width: 250px;
+            background-color: rgba(255, 255, 255, 0.8); /* Semi-transparent white */
             box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
             display: flex;
             flex-direction: column;
@@ -22,31 +26,92 @@
             text-decoration: none;
             margin: 10px 0;
             padding: 10px;
-            background-color: #007bff;
+            background-color: #6a5acd; /* Soft purple */
             color: white;
             text-align: center;
             border-radius: 5px;
+            font-weight: bold;
         }
         .sidebar a:hover {
-            background-color: #0056b3;
+            background-color: #483d8b; /* Darker shade */
         }
         .sidebar a.active {
-            background-color: #0044aa;
+            background-color: #4b0082; /* Indigo */
         }
         .content {
             flex-grow: 1;
             padding: 20px;
+            background-color: rgba(255, 255, 255, 0.9); /* Subtle contrast */
+            border-radius: 10px;
+            margin: 20px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
         }
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .header h1 {
+            color: #4b0082;
+            font-size: 2.5em;
+            margin: 0;
+        }
+        .header p {
+            font-style: italic;
+        }
+            h1, h2 {
+        color: #333;
+    }
+
+    .file-list {
+        list-style-type: none;
+        padding: 0;
+    }
+
+    .file-item {
+        margin: 10px 0;
+        padding: 10px;
+        background-color: #f9f9f9;
+        border-radius: 5px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        transition: background-color 0.3s ease;
+    }
+
+    .file-item:hover {
+        background-color: #e0e0e0;
+    }
+
+    .file-link {
+        text-decoration: none;
+        color: #007bff;
+        display: flex;
+        align-items: center;
+    }
+
+    .file-icon {
+        font-size: 24px;
+        margin-right: 10px;
+    }
+
+    .file-title {
+        font-size: 18px;
+    }
     </style>
 </head>
 <body>
     <div class="sidebar">
-        <a href="/schedule" class="{% if request.path == '/schedule' %}active{% endif %}">Youth Schedule</a>
+        <a href="/schedule" class="{% if request.path == '/schedule' %}active{% endif %}">Future Schedule</a>
         <a href="/attendance-check" class="{% if request.path == '/attendance-check' %}active{% endif %}">Attendance Check</a>
         <a href="/volunteer" class="{% if request.path == '/volunteer' %}active{% endif %}">Volunteer</a>
-        <a href="/view" class="{% if request.path == '/view' %}active{% endif %}">View Schedule</a>
+        <a href="/view" class="{% if request.path == '/view' %}active{% endif %}">Past Schedule</a>
+        <a href="/report" class="{% if request.path == '/report' %}active{% endif %}">Report</a>
+        <a href="/learning-materials" class="{% if request.path == '/learning-materials' %}active{% endif %}">learning-materials</a>
+        <a href="/retreat-materials" class="{% if request.path == '/retreat' %}active{% endif %}">retreat-materials</a>
+        <a href="/materials" class="{% if request.path == '/materials' %}active{% endif %}">Materials</a>
     </div>
     <div class="content">
+        <div class="header">
+            <h1>Volunteer Tracking System</h1>
+        </div>
         {% block content %}
         {% endblock %}
     </div>

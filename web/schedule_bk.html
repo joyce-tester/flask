@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Youth Schedule</h1>
+<p>Select a date and assign roles:</p>
+
+<form id="schedule-form" method="POST" action="/submit">
+    <!-- Date Dropdown -->
+    <div>
+        <label for="date">Date:</label>
+        <select id="date" name="date" aria-label="Select a date" onchange="submitToSchedule()">
+            <option value="" disabled {% if not selected_date %}selected{% endif %}>
+                Select a date
+            </option>
+            {% for date in dates %}
+                <option value="{{ date }}" {% if date == selected_date %}selected{% endif %}>
+                    {{ date }}
+                </option>
+            {% endfor %}
+        </select>
+    </div>
+
+    <!-- Role and Name Dropdowns in a Table -->
+    <table border="1" style="width: 50%; border-collapse: collapse; text-align: left; margin-top: 20px;">
+        <thead>
+            <tr>
+                <th>Role</th>
+                <th>Name</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% set role_order = [
+                "Sunday School Teacher",
+                "Assistant",
+                "Chinese Sunday School leader",
+                "Youth fellowship leader",
+                "Piano",
+                "Others"
+            ] %}
+
+            {% for role in role_order %}
+                <tr>
+                    <td>{{ role }}</td>
+                    <td>
+                        <select id="{{ role }}" name="{{ role }}">
+                            <option value="" {% if roles[role] == "" %}selected{% endif %}>Select a person</option>
+                            <option value="Lilian" {% if roles[role] == "Lilian" %}selected{% endif %}>Lilian</option>
+                            <option value="Sarah" {% if roles[role] == "Sarah" %}selected{% endif %}>Sarah</option>
+                            <option value="Annie" {% if roles[role] == "Annie" %}selected{% endif %}>Annie</option>
+                            <option value="Jeremy" {% if roles[role] == "Jeremy" %}selected{% endif %}>Jeremy</option>
+                            <option value="Andrea" {% if roles[role] == "Andrea" %}selected{% endif %}>Andrea</option>
+                            <option value="Emma" {% if roles[role] == "Emma" %}selected{% endif %}>Emma</option>
+                            <option value="Selina" {% if roles[role] == "Selina" %}selected{% endif %}>Selina</option>
+                            <option value="Faith" {% if roles[role] == "Faith" %}selected{% endif %}>Faith</option>
+                            <option value="Abby" {% if roles[role] == "Abby" %}selected{% endif %}>Abby</option>
+                            <option value="Aslan" {% if roles[role] == "Aslan" %}selected{% endif %}>Aslan</option>
+                            <option value="Ethan" {% if roles[role] == "Ethan" %}selected{% endif %}>Ethan</option>
+                            <option value="Abel" {% if roles[role] == "Abel" %}selected{% endif %}>Abel</option>
+                            <option value="Jessica" {% if roles[role] == "Jessica" %}selected{% endif %}>Jessica</option>
+                            <option value="Rachel" {% if roles[role] == "Rachel" %}selected{% endif %}>Rachel</option>
+                            <option value="Rae-Anne" {% if roles[role] == "Rae-Anne" %}selected{% endif %}>Rae-Anne</option>
+                            <option value="Arielle" {% if roles[role] == "Arielle" %}selected{% endif %}>Arielle</option>
+                            <option value="Yu-Ang" {% if roles[role] == "Yu-Ang" %}selected{% endif %}>Yu-Ang</option>
+                        </select>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <button type="submit" style="margin-top: 20px;">Submit</button>
+</form>
+
+<script>
+    function submitToSchedule() {
+        const form = document.getElementById('schedule-form');
+        form.action = '/schedule'; // Change action to /schedule
+        form.submit(); // Submit the form
+    }
+</script>
+{% endblock %}

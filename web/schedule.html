@@ -2,68 +2,81 @@
 
 {% block content %}
 <h1>Youth Schedule</h1>
-<p>Select a date and assign roles:</p>
+<p>Select a date range and assign roles:</p>
 
-<form id="schedule-form" method="POST" action="/submit">
-    <!-- Date Dropdown -->
+<form id="schedule-form" method="POST" action="/schedule">
+    <!-- Start Date and End Date Inputs -->
     <div>
-        <label for="date">Date:</label>
-        <select id="date" name="date" onchange="submitToSchedule()">
-            <option value="" disabled {% if not selected_date %}selected{% endif %}>Select a date</option>
-            {% for date in dates %}
-                <option value="{{ date }}" {% if date == selected_date %}selected{% endif %}>{{ date }}</option>
-            {% endfor %}
-        </select>
+        <label for="start-date">Start Date:</label>
+        <input type="date" id="start-date" name="start_date" aria-label="Select start date" value="{{ start_date if start_date else '' }}" required>
+
+        <label for="end-date" style="margin-left: 20px;">End Date:</label>
+        <input type="date" id="end-date" name="end_date" aria-label="Select end date" value="{{ end_date if end_date else '' }}" required>
     </div>
 
-    <!-- Role and Name Dropdowns in a Table -->
-    <table border="1" style="width: 50%; border-collapse: collapse; text-align: left; margin-top: 20px;">
-        <thead>
-            <tr>
-                <th>Role</th>
-                <th>Name</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for role, name in roles.items() %}
-                <tr>
-                    <td>{{ role }}</td>
-                    <td>
-                        <select id="{{ role }}" name="{{ role }}">
-                            <option value="" {% if name == "" %}selected{% endif %}> </option>
-                            <option value="Lilian" {% if name == "Lilian" %}selected{% endif %}>Lilian</option>
-                            <option value="Sarah" {% if name == "Sarah" %}selected{% endif %}>Sarah</option>
-                            <option value="Annie" {% if name == "Annie" %}selected{% endif %}>Annie</option>
-                            <option value="Jeremy" {% if name == "Jeremy" %}selected{% endif %}>Jeremy</option>
-                            <option value="Andrea" {% if name == "Andrea" %}selected{% endif %}>Andrea</option>
-                            <option value="Emma" {% if name == "Emma" %}selected{% endif %}>Emma</option>
-                            <option value="Selina" {% if name == "Selina" %}selected{% endif %}>Selina</option>
-                            <option value="Faith" {% if name == "Faith" %}selected{% endif %}>Faith</option>
-                            <option value="Abby" {% if name == "Abby" %}selected{% endif %}>Abby</option>
-                            <option value="Aslan" {% if name == "Aslan" %}selected{% endif %}>Aslan</option>
-                            <option value="Ethan" {% if name == "Ethan" %}selected{% endif %}>Ethan</option>
-                            <option value="Abel" {% if name == "Abel" %}selected{% endif %}>Abel</option>
-                            <option value="Jessica" {% if name == "Jessica" %}selected{% endif %}>Jessica</option>
-                            <option value="Rachel" {% if name == "Rachel" %}selected{% endif %}>Rachel</option>
-                            <option value="Rae-Anne" {% if name == "Rae-Anne" %}selected{% endif %}>Rae-Anne</option>
-                            <option value="Arielle" {% if name == "Arielle" %}selected{% endif %}>Arielle</option>
-                            <option value="Yu-Ang" {% if name == "Yu-Ang" %}selected{% endif %}>Yu-Ang</option>
-
-                        </select>
-                    </td>
-                </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-
-    <button type="submit" style="margin-top: 20px;">Submit</button>
+    <button type="submit" style="margin-top: 20px;">Search</button>
 </form>
 
+{% if dates_in_range %}
+    <form id="assign-roles-form" method="POST" action="/submit">
+        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; margin-top: 20px;">
+            {% for date_info in dates_in_range %}
+                <div style="border: 1px solid #ccc; padding: 10px;">
+                    <h3>{{ date_info.header_name }}</h3>
+                    <table border="1" style="width: 100%; border-collapse: collapse; text-align: left;">
+                        <thead>
+                            <tr>
+                                <th>Role</th>
+                                <th>Name</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for role in date_info.roles %}
+                                <tr>
+                                    <td>{{ role.name }}</td>
+                                    <td>
+                                        <select name="{{ role.name }}_{{ date_info.date }}">
+                                            <option value="">Select a person</option> <!-- Default option -->
+                                            {% for person in people %}
+                                                <option value="{{ person }}" {% if role.assigned_person == person %}selected{% endif %}>{{ person }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% endfor %}
+        </div>
+        <button type="submit" style="margin-top: 20px;">Submit</button>
+    </form>
+{% endif %}
+
 <script>
-    function submitToSchedule() {
-        const form = document.getElementById('schedule-form');
-        form.action = '/schedule'; // Change action to /schedule
-        form.submit(); // Submit the form
-    }
+    document.getElementById('schedule-form').addEventListener('submit', function(event) {
+        event.preventDefault();
+        const formData = new FormData(this);
+        fetch('/schedule', {
+            method: 'POST',
+            body: formData
+        }).then(response => response.text())
+          .then(html => {
+              document.body.innerHTML = html;
+          });
+    });
+
+    document.getElementById('assign-roles-form').addEventListener('submit', function(event) {
+        event.preventDefault();
+        const formData = new FormData(this);
+        fetch('/submit', {
+            method: 'POST',
+            body: formData
+        }).then(response => response.json())
+          .then(data => {
+              alert('Schedule submitted successfully!');
+              console.log(data);
+          });
+    });
 </script>
 {% endblock %}

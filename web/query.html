@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2>Roles of Selina</h2>
+
+<table>
+    <tr>
+        <th>Date</th>
+        <th>Role</th>
+    </tr>
+
+    {% if results %}
+        {% for row in results %}
+        <tr>
+            <td>{{ row[0] }}</td>
+            <td>{{ row[1] }}</td>
+        </tr>
+        {% endfor %}
+    {% else %}
+        <tr>
+            <td colspan="2">No results found</td>
+        </tr>
+    {% endif %}
+</table>
+{% endblock %}

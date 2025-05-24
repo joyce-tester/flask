@@ -1,0 +1,101 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Learning Materials</h1>
+<p>Click on the links below to view the learning materials:</p>
+
+<!-- PDF Files Section -->
+<h2>PDF Files</h2>
+<ul class="file-list">
+    {% for material in learning_materials %}
+        {% if material.url.endswith('.pdf') %}
+            <li class="file-item">
+                <a href="{{ material.url }}" target="_blank" class="file-link">
+                    <span class="file-icon">📄</span>
+                    <span class="file-title">{{ material.title }}</span>
+                </a>
+            </li>
+        {% endif %}
+    {% endfor %}
+</ul>
+
+<!-- PowerPoint Files Section -->
+<h2>PowerPoint Files</h2>
+<ul class="file-list" id="ppt-list">
+    {% for material in learning_materials %}
+        {% if material.url.endswith('.ppt') or material.url.endswith('.pptx') or 'docs.google.com/presentation' in material.url %}
+            <li class="file-item">
+                <a href="{{ material.url }}" data-url="{{ material.url }}" target="_blank" class="file-link ppt-link">
+                    <span class="file-icon">📊</span>
+                    <span class="file-title">{{ material.title }}</span>
+                </a>
+                <span class="download-fallback" style="display: none;">
+                    (Preview not available. <a href="{{ material.url }}" download>Download instead</a>)
+                </span>
+            </li>
+        {% endif %}
+    {% endfor %}
+</ul>
+
+<script>
+async function checkFileAccess(url) {
+    try {
+        const response = await fetch(url, { method: 'HEAD' });
+        return response.ok;
+    } catch (error) {
+        return false;
+    }
+}
+
+async function handlePptxLinks() {
+    const pptLinks = document.querySelectorAll('.ppt-link');
+
+    for (let link of pptLinks) {
+        const fileUrl = link.getAttribute('data-url');
+        const isGoogleDriveLink = fileUrl.includes('docs.google.com');
+
+        if (!isGoogleDriveLink) {
+            // Show error message for non-Google Drive links
+            link.style.color = 'red';
+            link.style.textDecoration = 'line-through';
+            const errorMessage = document.createElement('span');
+            errorMessage.textContent = ' (Error: Only Google Drive links are supported)';
+            errorMessage.style.color = 'red';
+            link.parentElement.appendChild(errorMessage);
+            continue;
+        }
+
+        try {
+            // Extract the file ID from the Google Drive URL - handle both presentation and file formats
+            const fileIdMatch = fileUrl.match(/\/(presentation|file)\/d\/([^\/]+)/);
+            if (!fileIdMatch) {
+                throw new Error('Invalid Google Drive URL format');
+            }
+
+            const fileId = fileIdMatch[2];  // Use group 2 since group 1 is the type (presentation/file)
+            const previewUrl = `https://docs.google.com/presentation/d/${fileId}/preview`;
+            const canAccess = await checkFileAccess(fileUrl);
+
+            if (canAccess) {
+                link.setAttribute('href', previewUrl);
+            } else {
+                const fallback = link.parentElement.querySelector('.download-fallback');
+                if (fallback) {
+                    fallback.style.display = 'inline';
+                }
+            }
+        } catch (error) {
+            // Handle invalid Google Drive URLs
+            link.style.color = 'red';
+            const errorMessage = document.createElement('span');
+            errorMessage.textContent = ' (Error: Invalid Google Drive URL format)';
+            errorMessage.style.color = 'red';
+            link.parentElement.appendChild(errorMessage);
+        }
+    }
+}
+
+document.addEventListener('DOMContentLoaded', handlePptxLinks);
+</script>
+
+{% endblock %}

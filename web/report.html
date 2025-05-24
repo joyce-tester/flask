@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2>Select Name</h2>
+
+<!-- Dropdown to select a name -->
+<form method="GET" action="/report">
+    <label for="name">Select a Name:</label>
+    <select id="name" name="name" onchange="this.form.submit()">
+        <!-- Default blank option -->
+        <option value="" {% if not selected_name %}selected{% endif %}>-- Select a name --</option>
+        <option value="Selina" {% if selected_name == "Selina" %}selected{% endif %}>Selina</option>
+        <option value="Andrea" {% if selected_name == "Andrea" %}selected{% endif %}>Andrea</option>
+        <option value="Abby" {% if selected_name == "Abby" %}selected{% endif %}>Abby</option>
+        <option value="Emma" {% if selected_name == "Emma" %}selected{% endif %}>Emma</option>
+        <option value="Aslan" {% if selected_name == "Aslan" %}selected{% endif %}>Aslan</option>
+        <option value="Yu-Ang" {% if selected_name == "Yu-Ang" %}selected{% endif %}>Yu-Ang</option>
+        <option value="Jeremy" {% if selected_name == "Jeremy" %}selected{% endif %}>Jeremy</option>
+    </select>
+</form>
+
+<!-- Table to display results -->
+<table border="1" style="width: 50%; border-collapse: collapse; text-align: left; margin-top: 20px;">
+    <thead>
+        <tr>
+            <th>Date</th>
+            <th>Role</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% if results %}
+            {% for row in results %}
+                <tr>
+                    <td>{{ row[0] }}</td>
+                    <td>{{ row[1] | replace('$.', '') }}</td>
+                </tr>
+            {% endfor %}
+        {% else %}
+            <tr>
+                <td colspan="2">No results found</td>
+            </tr>
+        {% endif %}
+    </tbody>
+</table>
+{% endblock %}

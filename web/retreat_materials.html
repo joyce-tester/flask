@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Retreat Materials</h1>
+<p>Click on the links below to view the learning materials:</p>
+
+<!-- PDF Files Section -->
+<h2>PDF Files</h2>
+<ul class="file-list">
+    {% for material in retreat_materials %}
+        {% if material.url.endswith('.pdf') %}
+            <li class="file-item">
+                <a href="{{ material.url }}" target="_blank" class="file-link">
+                    <span class="file-icon">📄</span>
+                    <span class="file-title">{{ material.title }}</span>
+                </a>
+            </li>
+        {% endif %}
+    {% endfor %}
+</ul>
+
+{% endblock %}
